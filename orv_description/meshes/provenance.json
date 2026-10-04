@@ -1,0 +1,54 @@
+{
+  "source_bounds_mm": [
+    [
+      -124.288147268631,
+      139.387076250827,
+      140.129834999916
+    ],
+    [
+      161.552543445546,
+      298.257248226689,
+      199.129834999917
+    ]
+  ],
+  "mesh_size_m": [
+    0.29,
+    0.155,
+    0.067
+  ],
+  "source_faces": 811,
+  "source_to_mesh_scale": [
+    0.001014551144819273,
+    0.0009756394046300269,
+    0.001135593220338964
+  ],
+  "source_center_mm": [
+    18.632198088457507,
+    218.82216223875798,
+    169.6298349999165
+  ],
+  "source_file": "V3 car 3D model.STEP",
+  "source_sha256": "940cca87d55fff93d888739e5e26d90ce216b2fb55e3d123a93572d448048c0e",
+  "body_triangles": {
+    "paint": 36549,
+    "motor": 2556,
+    "window": 4,
+    "fastener": 288
+  },
+  "wheel_triangles": {
+    "rubber": 2048,
+    "rim": 2240,
+    "hub": 1536,
+    "tread": 6400
+  },
+  "wheel_mesh_size_m": {
+    "diameter": 0.088,
+    "width": 0.035
+  },
+  "notes": [
+    "Chassis from user-supplied STEP, rescaled to measured length and body height.",
+    "Wheel tread, spokes, front bumper, vented side skirts, window insert and bolt heads are visual reconstructions from photos.",
+    "Body width 155 mm and wheelbase 200 mm remain unmeasured.",
+    "STEP source is a Mecanum version; original wheels are excluded."
+  ]
+}

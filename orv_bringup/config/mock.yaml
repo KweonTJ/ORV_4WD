@@ -1,0 +1,21 @@
+# User-confirmed diameter 88 mm, outer width 245 mm and equal tire widths 35 mm.
+orv_driver:
+  ros__parameters:
+    remote_enabled: true
+    remote_max_rpm: 15.0
+    wheel_radius: 0.044           # Diameter 88 mm -> radius 44 mm
+    track_width: 0.210            # Center spacing: 245 mm outer width - 35 mm tire width
+    hardware_confirmed: false
+    motor_map: [1, 2, 3, 4]
+    encoder_cpr: [4320, 4320, 4320, 4320]
+    motor_sign: [1, 1, 1, 1]
+    encoder_sign: [1, 1, 1, 1]
+    kp: [1.0, 1.0, 1.0, 1.0]
+    ki: [0.5, 0.5, 0.5, 0.5]
+    kd: [0.0, 0.0, 0.0, 0.0]
+    max_pwm: [100, 100, 100, 100]
+    min_pwm: [0, 0, 0, 0]
+    max_rpm: 30.0
+    accel_rpm_s: 30.0
+    command_timeout: 0.5
+    firmware_timeout_ms: 300

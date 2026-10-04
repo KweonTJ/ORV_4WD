@@ -1,0 +1,21 @@
+# All channel arrays: M1, M2, M3, M4. These are commissioning defaults.
+orv_driver:
+  ros__parameters:
+    wheel_radius: 0.044           # User-confirmed diameter 88 mm -> radius 44 mm
+    track_width: 0.210            # Center spacing: 245 mm outer width - 35 mm tire width
+    hardware_confirmed: false     # Set only after shield/wiring/power checks
+    remote_enabled: true         # Requires integrated firmware AND hardware_confirmed
+    remote_max_rpm: 15.0         # Also limited by max_rpm
+    motor_map: [1, 2, 3, 4]       # Logical FL, RL, FR, RR -> physical channels; VERIFY
+    encoder_cpr: [4320, 4320, 4320, 4320]  # Provisional 12 PPR x 4 x 90
+    motor_sign: [1, 1, 1, 1]      # VERIFY one wheel at a time
+    encoder_sign: [1, 1, 1, 1]    # Positive commanded forward must measure positive
+    kp: [1.0, 1.0, 1.0, 1.0]     # Initial gains, NOT tuned on hardware
+    ki: [0.5, 0.5, 0.5, 0.5]
+    kd: [0.0, 0.0, 0.0, 0.0]
+    max_pwm: [100, 100, 100, 100]
+    min_pwm: [0, 0, 0, 0]
+    max_rpm: 30.0
+    accel_rpm_s: 30.0
+    command_timeout: 0.5
+    firmware_timeout_ms: 300

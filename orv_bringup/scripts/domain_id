@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+"""Print a configured domain ID for use in shell command substitution."""
+import argparse
+
+from orv_4wd.domain_config import default_domain_config, load_domains
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('role', choices=('vehicle', 'operator'))
+    parser.add_argument('--config', default=str(default_domain_config()))
+    args = parser.parse_args()
+    try:
+        vehicle, operator = load_domains(args.config)
+    except (ValueError, OSError) as exc:
+        parser.error(str(exc))
+    print(vehicle if args.role == 'vehicle' else operator)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,56 @@
+# Vehicle -> operator is the default direction. Only velocity commands reverse it.
+name: orv_domain_bridge
+from_domain: 29
+to_domain: 16
+topics:
+  /orv/cmd_vel:
+    type: geometry_msgs/msg/Twist
+    reversed: true
+    remap: /cmd_vel
+    qos:
+      reliability: reliable
+      durability: volatile
+      history: keep_last
+      depth: 1
+      lifespan: 200000000
+  /odom:
+    type: nav_msgs/msg/Odometry
+    remap: /orv/odom
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10
+  /joint_states:
+    type: sensor_msgs/msg/JointState
+    remap: /orv/joint_states
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10
+  /orv/status:
+    type: std_msgs/msg/String
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10
+  /tf:
+    type: tf2_msgs/msg/TFMessage
+    remap: /orv/tf
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 100
+  /tf_static:
+    type: tf2_msgs/msg/TFMessage
+    remap: /orv/tf_static
+    qos:
+      reliability: reliable
+      durability: transient_local
+      depth: 100
+  /robot_description:
+    type: std_msgs/msg/String
+    remap: /orv/robot_description
+    qos:
+      reliability: reliable
+      durability: transient_local
+      depth: 1

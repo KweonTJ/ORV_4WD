@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!-- Diameter 88 mm, tire width 35 mm, outer width 245 mm,
+     chassis length 290 mm, chassis height 67 mm and ground clearance 21 mm are measured.
+     Chassis width, wheelbase and axle diameter remain visualization estimates. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="orv_4wd">
+  <xacro:arg name="wheel_radius" default="0.044"/>
+  <xacro:arg name="outer_width" default="0.245"/>
+  <xacro:arg name="wheel_width" default="0.035"/>
+  <xacro:arg name="chassis_length" default="0.290"/>
+  <xacro:arg name="chassis_height" default="0.067"/>
+  <xacro:arg name="ground_clearance" default="0.021"/>
+  <xacro:arg name="axle_radius" default="0.006"/>
+  <!-- Zero derives the center spacing from outer_width - wheel_width.
+       A positive track_width overrides outer_width for calibrated driving models. -->
+  <xacro:arg name="track_width" default="0.0"/>
+  <xacro:property name="radius" value="$(arg wheel_radius)"/>
+  <xacro:property name="body_height" value="$(arg chassis_height)"/>
+  <xacro:property name="clearance" value="$(arg ground_clearance)"/>
+  <xacro:property name="body_z" value="${float(clearance)+float(body_height)/2}"/>
+  <xacro:property name="width" value="$(arg wheel_width)"/>
+  <xacro:property name="outside" value="$(arg outer_width)"/>
+  <xacro:property name="track_override" value="$(arg track_width)"/>
+  <xacro:property name="track" value="${float(track_override) if float(track_override) > 0 else float(outside) - float(width)}"/>
+  <xacro:property name="body_width" value="${max(0.01, float(track)-float(width)-0.02)}"/>
+  <material name="axle_metal"><color rgba="0.72 0.75 0.80 1"/></material>
+  <link name="base_link"/>
+  <link name="chassis_link">
+    <visual>
+      <geometry><mesh filename="package://orv_description/meshes/v3_chassis.dae"
+        scale="${float('$(arg chassis_length)')/0.290} ${body_width/0.155} ${float(body_height)/0.067}"/></geometry>
+    </visual>
+    <collision><geometry><box size="$(arg chassis_length) ${body_width} ${body_height}"/></geometry></collision>
+  </link>
+  <joint name="chassis_fixed" type="fixed"><parent link="base_link"/><child link="chassis_link"/><origin xyz="0 0 ${body_z}"/></joint>
+  <xacro:macro name="wheel" params="name x y">
+    <!-- The axle frame is at the wheel center. Its visual extends inward
+         through the wheel and 2 mm into the chassis to bridge the gap. -->
+    <xacro:property name="side" value="${1 if float(y) > 0 else -1}"/>
+    <xacro:property name="shaft_length" value="${side*float(y)-float(body_width)/2+0.002}"/>
+    <link name="${name}_axle_link">
+      <visual>
+        <origin xyz="0 ${-side*shaft_length/2} 0" rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="$(arg axle_radius)" length="${shaft_length}"/></geometry>
+        <material name="axle_metal"/>
+      </visual>
+    </link>
+    <joint name="${name}_axle_fixed" type="fixed">
+      <parent link="chassis_link"/><child link="${name}_axle_link"/>
+      <origin xyz="${x} ${y} ${float(radius)-body_z}"/>
+    </joint>
+    <link name="${name}_wheel_link">
+      <visual>
+        <origin rpy="${pi if side == -1 else 0} 0 0"/>
+        <geometry><mesh filename="package://orv_description/meshes/rubber_wheel.dae"
+          scale="${float(radius)/0.044} ${float(width)/0.035} ${float(radius)/0.044}"/></geometry>
+      </visual>
+      <collision><origin rpy="${pi/2} 0 0"/><geometry><cylinder radius="${radius}" length="${width}"/></geometry></collision>
+    </link>
+    <joint name="${name}_wheel_joint" type="continuous">
+      <parent link="${name}_axle_link"/><child link="${name}_wheel_link"/>
+      <origin xyz="0 0 0"/><axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+  <xacro:wheel name="front_left" x="0.10" y="${float(track)/2}"/>
+  <xacro:wheel name="rear_left" x="-0.10" y="${float(track)/2}"/>
+  <xacro:wheel name="front_right" x="0.10" y="${-float(track)/2}"/>
+  <xacro:wheel name="rear_right" x="-0.10" y="${-float(track)/2}"/>
+</robot>

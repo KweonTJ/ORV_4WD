@@ -9,6 +9,7 @@ from .protocol import Kind, Parser, Telemetry, delta32, frame
 class Controller:
     def __init__(self, factory, config, mock=False, clock=time.monotonic):
         self.factory, self.cfg, self.mock, self.clock = factory, config.validate(), mock, clock
+        self.backend = 'mock' if mock else 'hardware'
         self.transport = None
         self.parser = Parser()
         self.telemetry = None
@@ -281,7 +282,7 @@ class Controller:
         state = self.telemetry
         remote = bool(self.ready and state and state.remote_active)
         return {
-            'mode': 'mock' if self.mock else 'hardware', 'ready': self.ready,
+            'mode': self.backend, 'ready': self.ready,
             'geometry_valid': self.cfg.wheel_radius > 0 and self.cfg.track_width > 0,
             'armed': bool(self.ready and state and state.armed), 'arm_requested': self.armed,
             'source': 'remote' if remote else self.source,

@@ -1,0 +1,70 @@
+name: orv_sim_domain_bridge
+from_domain: 81
+to_domain: 16
+topics:
+  /orv_sim/cmd_vel:
+    type: geometry_msgs/msg/Twist
+    reversed: true
+    remap: /cmd_vel
+    qos:
+      reliability: reliable
+      durability: volatile
+      history: keep_last
+      depth: 1
+      lifespan: 200000000
+  /odom:
+    type: nav_msgs/msg/Odometry
+    remap: /orv_sim/odom
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10
+  /joint_states:
+    type: sensor_msgs/msg/JointState
+    remap: /orv_sim/joint_states
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10
+  /orv/status:
+    type: std_msgs/msg/String
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10
+    remap: /orv_sim/status
+  /tf:
+    type: tf2_msgs/msg/TFMessage
+    remap: /orv_sim/tf
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 100
+  /tf_static:
+    type: tf2_msgs/msg/TFMessage
+    remap: /orv_sim/tf_static
+    qos:
+      reliability: reliable
+      durability: transient_local
+      depth: 100
+  /robot_description:
+    type: std_msgs/msg/String
+    remap: /orv_sim/robot_description
+    qos:
+      reliability: reliable
+      durability: transient_local
+      depth: 1
+  /orv/sim/ground_truth:
+    type: nav_msgs/msg/Odometry
+    remap: /orv_sim/ground_truth
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10
+  /orv/sim/metrics:
+    type: std_msgs/msg/String
+    remap: /orv_sim/metrics
+    qos:
+      reliability: reliable
+      durability: volatile
+      depth: 10

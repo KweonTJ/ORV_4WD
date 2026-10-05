@@ -1,0 +1,20 @@
+orv_driver:
+  ros__parameters:
+    mode: mujoco
+    wheel_radius: 0.044
+    track_width: 0.210
+    hardware_confirmed: false
+    remote_enabled: false
+    encoder_cpr: [4320, 4320, 4320, 4320]
+    motor_map: [1, 2, 3, 4]
+    motor_sign: [1, 1, 1, 1]
+    encoder_sign: [1, 1, 1, 1]
+    kp: [1.0, 1.0, 1.0, 1.0]
+    ki: [0.5, 0.5, 0.5, 0.5]
+    kd: [0.0, 0.0, 0.0, 0.0]
+    max_pwm: [100, 100, 100, 100]
+    min_pwm: [0, 0, 0, 0]
+    max_rpm: 30.0
+    accel_rpm_s: 30.0
+    command_timeout: 0.5
+    firmware_timeout_ms: 300

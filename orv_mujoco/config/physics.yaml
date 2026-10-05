@@ -1,0 +1,22 @@
+# Geometry is measured except wheelbase/body width. Dynamics are provisional.
+simulation_domain_id: 81
+wheel_radius: 0.044
+wheel_width: 0.035
+track_width: 0.210
+wheelbase: 0.200                # Assumed; measure front/rear axle separation
+chassis_length: 0.290
+chassis_width: 0.155            # Assumed
+chassis_height: 0.067
+ground_clearance: 0.021
+total_mass: 2.5                # kg, provisional INCLUDING four wheels
+wheel_mass: 0.09               # kg per wheel, provisional
+wheel_armature: 0.0001         # kg*m^2, reflected drivetrain inertia, provisional
+wheel_damping: 0.0005          # N*m*s/rad, provisional
+friction: [0.8, 0.001, 0.00002] # sliding / torsional / rolling, provisional
+stall_torque: 1.2              # N*m per geared output, provisional (NOT measured)
+no_load_rpm: 107.0             # Supplied motor specification, nominal voltage
+physical_encoder_cpr: 4320     # Assumed physical count resolution, independent of calibrated CPR
+physical_motor_map: [1, 2, 3, 4] # FL, RL, FR, RR -> physical M channel
+timestep: 0.002
+control_period: 0.020
+terrain: flat                  # flat or course

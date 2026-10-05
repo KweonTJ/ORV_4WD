@@ -54,13 +54,13 @@ class Window(Q.QMainWindow):
         self.setCentralWidget(root)
         layout = Q.QVBoxLayout(root)
         connection = Q.QHBoxLayout()
-        self.address = Q.QLineEdit('http://127.0.0.1:8765')
+        self.address = Q.QLineEdit(os.environ.get('ORV_API_URL', 'http://127.0.0.1:8765'))
         self.token = Q.QLineEdit(os.environ.get('ORV_API_TOKEN', ''))
         self.token.setEchoMode(Q.QLineEdit.Password)
         self.token.setPlaceholderText('원격 접속 토큰')
         connect = Q.QPushButton('연결 / 다시 연결')
         connect.clicked.connect(self.connect_server)
-        connection.addWidget(Q.QLabel('Raspberry Pi'))
+        connection.addWidget(Q.QLabel('차량 / 시뮬레이터'))
         connection.addWidget(self.address, 2)
         connection.addWidget(self.token, 1)
         connection.addWidget(connect)
@@ -304,7 +304,9 @@ class Window(Q.QMainWindow):
             return
         self.last_status = status
         owner = {'remote': '무선 조종기', 'ros': 'ROS', 'gui': 'GUI'}.get(status.get('source'), '없음')
-        self.banner.setText(f"{'모의 장치 — 실제 로봇 아님' if status['mode']=='mock' else '실제 UNO'} · "
+        device = {'mock': '모의 장치 — 실제 로봇 아님', 'mujoco': 'MuJoCo 물리 시뮬레이션',
+                  'hardware': '실제 UNO'}.get(status['mode'], status['mode'])
+        self.banner.setText(f"{device} · "
                             f"{'구동 활성' if status.get('armed') else '구동 비활성'} · 제어: {owner} · {status['reason']}")
         if not self.loaded and status.get('config'):
             self.load_fields(status['config']); self.loaded = True
@@ -330,6 +332,8 @@ def main():
     app = Q.QApplication(sys.argv)
     window = Window()
     window.show()
+    if os.environ.get('ORV_AUTO_CONNECT') == '1':
+        QtCore.QTimer.singleShot(500, window.connect_server)
     return app.exec() if hasattr(app, 'exec') else app.exec_()
 
 

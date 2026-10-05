@@ -15,6 +15,7 @@ Arduino UNO R3와 QGPMaker 모터 실드로 일반 바퀴 4개를 제어하는 �
 | `orv_description` | STEP 기반 판금 차체와 사진 기반 고무 바퀴를 사용하는 RViz 모델 |
 | `orv_firmware` | UNO용 엔코더·PID·PWM 제어와 동봉 PS2형 무선 수신기 통합 펌웨어 |
 | `orv_gui` | ROS 설치 없이 실행할 수 있는 Qt 설정 앱 |
+| `orv_mujoco` | MuJoCo 바퀴·접촉 물리 시뮬레이션 및 실차 토픽 미러 |
 
 현재 ROS 드라이버는 `rclpy`로 구현했습니다. `ros2_control`의 `SystemInterface` 플러그인은 이 버전에 포함하지 않았습니다. `/cmd_vel`, `/odom`, `/joint_states`, TF를 제공하므로 표준 ROS 주행 명령과 상태 확인이 가능합니다.
 
@@ -62,7 +63,7 @@ ros2 run orv_gui tuner
 
 `http://127.0.0.1:8765`로 연결한 다음 `GUI 구동 활성화`를 누릅니다. 주행/모터 시험 버튼은 누르고 있는 동안만 명령을 보냅니다. 버튼을 놓거나 GUI 창이 비활성화되면 정지·구동 해제합니다. 한 번 해제되면 다시 활성화해야 합니다. 창이 멎거나 연결이 끊겨도 호스트와 UNO의 별도 타임아웃이 작동합니다.
 
-모의 장치는 1차 지연으로 회전수를 근사합니다. 실제 바퀴 마찰, 슬립, 전류, 전원 강하, 모터별 배선 부호, PID 응답을 검증하는 물리 시뮬레이터는 아닙니다.
+`mode:=mock` 장치는 1차 지연으로 회전수를 근사합니다. 실제 바퀴 마찰, 슬립, 전류, 전원 강하, 모터별 배선 부호, PID 응답을 검증하는 물리 시뮬레이터는 아닙니다. 접촉 동역학을 계산하려면 아래 MuJoCo 실행을 사용합니다.
 
 ## RViz에서 URDF 보기
 
@@ -77,6 +78,45 @@ ros2 launch orv_description display.launch.py
 각 바퀴의 연결 구조는 `base_link → chassis_link → *_axle_link → *_wheel_link`입니다. 차체에서 바퀴 중심까지 은색 연결축을 표시하며, 바퀴는 중심의 `*_wheel_joint`에서 Y축을 기준으로 회전합니다. 연결축 지름 12 mm는 시각화용 가정값이며 `axle_radius`로 조정합니다. 기존 바퀴 관절 이름과 `/joint_states` 제어 인터페이스는 같습니다.
 
 상세 형상은 패키지에 포함된 COLLADA 메시로 표시하므로 Raspberry Pi에서 CAD 변환 도구를 설치할 필요가 없습니다. 상판 타공, 전면 경사창·브래킷, 측면 통풍구, 타이어 트레드·스포크가 포함됩니다. 충돌 형상은 차체 박스와 바퀴 원통으로 단순화했으며, 물리 시뮬레이션용 질량·관성은 아직 정의하지 않았습니다.
+
+## MuJoCo 디지털 트윈
+
+![MuJoCo에서 렌더링한 ORV 물리 모델](docs/images/orv_mujoco.png)
+
+실측 형상과 기존 상세 메시를 사용하고, 바퀴별 토크·지면 접촉·미끄러짐을 계산합니다. **질량·마찰·모터 토크는 아직 실측 전 임시값**입니다. 가상 엔코더 기반 `/odom`과 물리 엔진의 `/orv/sim/ground_truth`를 비교할 수 있습니다.
+
+```bash
+cd /home/ktj/ORV_4WD
+source /opt/ros/humble/setup.bash
+python3 -m pip install --user -r src/orv_mujoco/requirements.txt
+colcon build --symlink-install
+source install/setup.bash
+ros2 launch orv_mujoco simulation.launch.py
+```
+
+이후에는 [실행 쉘 파일](run_simulation.sh) 하나로 ROS 환경 설정과 통합 시뮬레이션 실행을 처리할 수 있습니다. 어느 폴더에서 호출해도 동작하며, 실행 파일이 아직 빌드되지 않았다면 필요한 패키지를 먼저 빌드합니다.
+
+```bash
+/home/ktj/ORV_4WD/src/run_simulation.sh
+# 장애물 코스: 위 명령 뒤에 --course
+# 화면 없이 실행: --headless / 다시 빌드: --build
+```
+
+현재 PC에서는 `/home/ktj/ORV_4WD/run_simulation.sh`로도 실행할 수 있습니다. 추가 `terrain:=course`, `bridge:=true`, `rviz:=true` 등의 인자는 ROS launch에 그대로 전달합니다. 통합 창을 닫거나 터미널에서 `Ctrl+C`로 종료하세요. 이미 실행 중이라면 종료 후 다시 실행합니다.
+
+**한 창에 MuJoCo 차량 화면·RPM 그래프·네 모터의 엔코더/RPM/PWM·주행 버튼이 함께 표시됩니다.** 오른쪽 탭에서 PID·엔코더·출력 제한도 조절합니다. `GUI 구동 활성화` 후 주행 버튼을 누르고 있는 동안 움직이며, 버튼을 놓거나 창이 비활성화되면 출력이 해제됩니다. 마우스 드래그로 시점을 돌리고 휠로 확대할 수 있습니다. `terrain:=course`로 경사판·장애물 코스를, `viewer:=false gui:=false`로 화면 없는 실행을 선택합니다.
+
+![MuJoCo 차량·모터 상태·주행 제어 통합 화면](docs/images/orv_mujoco_dashboard.png)
+
+시뮬레이션은 별도 localhost 도메인을 사용합니다. `bridge:=true`를 추가하면 조종 PC에서 `/orv_sim/...` 토픽으로 연결할 수 있습니다. 실제 차량의 `/orv/...`와 구분하며 서비스는 시뮬레이션 도메인에서 호출합니다.
+
+실제 차량 bringup과 기존 domain_bridge를 실행한 PC에서는 다음 명령으로 **실차 오도메트리·바퀴 상태를 따라가는 미러**를 열 수 있습니다. 이 실행은 주행 명령을 발행하지 않습니다.
+
+```bash
+ros2 launch orv_mujoco mirror.launch.py
+```
+
+[실행·ROS 제어·물리 보정·검증 방법](docs/MUJOCO.md)에 정리했습니다. 실차 미러는 엔코더 추정 위치를 표시하며, 실제 차량과의 연결은 아직 실물로 검증하지 않았습니다.
 
 ## 차량 ↔ 조종 PC: domain_bridge
 

@@ -31,7 +31,7 @@ JOINT_NAMES = ['front_left_wheel_joint', 'rear_left_wheel_joint',
 
 
 class Driver(Node):
-    def __init__(self):
+    def __init__(self, simulation_factory=None):
         super().__init__('orv_driver')
         self.declare_parameter('mode', 'mock')
         self.declare_parameter('port', '/dev/serial/by-id/SET_YOUR_UNO_DEVICE')
@@ -48,11 +48,15 @@ class Driver(Node):
             self.declare_parameter(key, value)
         cfg = Config(**{key: self.get_parameter(key).value for key in self.config_names}).validate()
         mode = self.get_parameter('mode').value
-        if mode not in ('mock', 'hardware'):
-            raise ValueError('mode must be mock or hardware')
+        if mode not in ('mock', 'hardware', 'mujoco'):
+            raise ValueError('mode must be mock, hardware or mujoco')
+        if mode == 'mujoco' and simulation_factory is None:
+            raise ValueError('Use ros2 launch orv_mujoco simulation.launch.py for MuJoCo')
         port = self.get_parameter('port').value
-        factory = MockTransport if mode == 'mock' else lambda: SerialTransport(port)
-        self.core = Controller(factory, cfg, mock=mode == 'mock')
+        factory = (simulation_factory if mode == 'mujoco' else
+                   MockTransport if mode == 'mock' else lambda: SerialTransport(port))
+        self.core = Controller(factory, cfg, mock=mode != 'hardware')
+        self.core.backend = mode
         self.add_on_set_parameters_callback(self.parameters_changed)
         self.status_pub = self.create_publisher(String, 'orv/status', 10)
         self.joint_pub = self.create_publisher(JointState, 'joint_states', 10)

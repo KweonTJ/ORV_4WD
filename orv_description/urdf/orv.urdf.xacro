@@ -13,6 +13,8 @@
   <!-- Zero derives the center spacing from outer_width - wheel_width.
        A positive track_width overrides outer_width for calibrated driving models. -->
   <xacro:arg name="track_width" default="0.0"/>
+  <xacro:arg name="wheelbase" default="0.200"/>
+  <xacro:arg name="chassis_width" default="0.0"/>
   <xacro:property name="radius" value="$(arg wheel_radius)"/>
   <xacro:property name="body_height" value="$(arg chassis_height)"/>
   <xacro:property name="clearance" value="$(arg ground_clearance)"/>
@@ -21,7 +23,9 @@
   <xacro:property name="outside" value="$(arg outer_width)"/>
   <xacro:property name="track_override" value="$(arg track_width)"/>
   <xacro:property name="track" value="${float(track_override) if float(track_override) > 0 else float(outside) - float(width)}"/>
-  <xacro:property name="body_width" value="${max(0.01, float(track)-float(width)-0.02)}"/>
+  <xacro:property name="body_width_override" value="$(arg chassis_width)"/>
+  <xacro:property name="body_width" value="${float(body_width_override) if float(body_width_override) > 0 else max(0.01, float(track)-float(width)-0.02)}"/>
+  <xacro:property name="half_wheelbase" value="${float('$(arg wheelbase)')/2}"/>
   <material name="axle_metal"><color rgba="0.72 0.75 0.80 1"/></material>
   <link name="base_link"/>
   <link name="chassis_link">
@@ -61,8 +65,8 @@
       <origin xyz="0 0 0"/><axis xyz="0 1 0"/>
     </joint>
   </xacro:macro>
-  <xacro:wheel name="front_left" x="0.10" y="${float(track)/2}"/>
-  <xacro:wheel name="rear_left" x="-0.10" y="${float(track)/2}"/>
-  <xacro:wheel name="front_right" x="0.10" y="${-float(track)/2}"/>
-  <xacro:wheel name="rear_right" x="-0.10" y="${-float(track)/2}"/>
+  <xacro:wheel name="front_left" x="${half_wheelbase}" y="${float(track)/2}"/>
+  <xacro:wheel name="rear_left" x="${-half_wheelbase}" y="${float(track)/2}"/>
+  <xacro:wheel name="front_right" x="${half_wheelbase}" y="${-float(track)/2}"/>
+  <xacro:wheel name="rear_right" x="${-half_wheelbase}" y="${-float(track)/2}"/>
 </robot>

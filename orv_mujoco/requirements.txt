@@ -1,0 +1,2 @@
+# Install in the Python environment used by ROS Humble.
+mujoco==3.10.0

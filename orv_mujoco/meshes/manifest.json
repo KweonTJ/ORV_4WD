@@ -1,0 +1,52 @@
+{
+  "v3_chassis": {
+    "sha256": "e255d62850fea66c4988fb61510ab417c7de4e4e562e0b6250965752fcf14d5f",
+    "groups": [
+      {
+        "name": "v3_chassis_paint",
+        "file": "v3_chassis_paint.obj",
+        "rgba": "0.19 0.205 0.22 1"
+      },
+      {
+        "name": "v3_chassis_motor",
+        "file": "v3_chassis_motor.obj",
+        "rgba": "0.43 0.45 0.47 1"
+      },
+      {
+        "name": "v3_chassis_window",
+        "file": "v3_chassis_window.obj",
+        "rgba": "0.69 0.72 0.73 1"
+      },
+      {
+        "name": "v3_chassis_fastener",
+        "file": "v3_chassis_fastener.obj",
+        "rgba": "0.66 0.68 0.7 1"
+      }
+    ]
+  },
+  "rubber_wheel": {
+    "sha256": "9f32ee65a5e5f455456024e9432a01e28d9f890eeb44461686827026961f058b",
+    "groups": [
+      {
+        "name": "rubber_wheel_rubber",
+        "file": "rubber_wheel_rubber.obj",
+        "rgba": "0.07 0.074 0.079 1"
+      },
+      {
+        "name": "rubber_wheel_rim",
+        "file": "rubber_wheel_rim.obj",
+        "rgba": "0.22 0.23 0.24 1"
+      },
+      {
+        "name": "rubber_wheel_hub",
+        "file": "rubber_wheel_hub.obj",
+        "rgba": "0.29 0.3 0.31 1"
+      },
+      {
+        "name": "rubber_wheel_tread",
+        "file": "rubber_wheel_tread.obj",
+        "rgba": "0.14 0.145 0.15 1"
+      }
+    ]
+  }
+}
